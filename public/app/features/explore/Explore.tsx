@@ -97,6 +97,7 @@ interface ExploreProps {
   timeZone?: TimeZone;
   onHiddenSeriesChanged?: (hiddenSeries: string[]) => void;
   toggleGraph: typeof toggleGraph;
+  originPanel: number;
 }
 
 /**
@@ -133,7 +134,16 @@ export class Explore extends React.PureComponent<ExploreProps> {
   }
 
   componentDidMount() {
-    const { initialized, exploreId, initialDatasource, initialQueries, initialRange, mode, initialUI } = this.props;
+    const {
+      initialized,
+      exploreId,
+      initialDatasource,
+      initialQueries,
+      initialRange,
+      mode,
+      initialUI,
+      originPanel,
+    } = this.props;
     const width = this.el ? this.el.offsetWidth : 0;
 
     // initialize the whole explore first time we mount and if browser history contains a change in datasource
@@ -146,7 +156,8 @@ export class Explore extends React.PureComponent<ExploreProps> {
         mode,
         width,
         this.exploreEvents,
-        initialUI
+        initialUI,
+        originPanel
       );
     }
   }
@@ -358,7 +369,7 @@ function mapStateToProps(state: StoreState, { exploreId }: ExploreProps) {
     absoluteRange,
   } = item;
 
-  const { datasource, queries, range: urlRange, mode: urlMode, ui } = (urlState || {}) as ExploreUrlState;
+  const { datasource, queries, range: urlRange, mode: urlMode, ui, originPanel } = (urlState || {}) as ExploreUrlState;
   const initialDatasource = datasource || store.get(lastUsedDatasourceKeyForOrgId(state.user.orgId));
   const initialQueries: DataQuery[] = ensureQueriesMemoized(queries);
   const initialRange = urlRange ? getTimeRangeFromUrlMemoized(urlRange, timeZone).raw : DEFAULT_RANGE;
@@ -405,6 +416,7 @@ function mapStateToProps(state: StoreState, { exploreId }: ExploreProps) {
     showingGraph,
     showingTable,
     absoluteRange,
+    originPanel,
   };
 }
 

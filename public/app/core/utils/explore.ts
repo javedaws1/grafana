@@ -27,6 +27,7 @@ import {
   DataSourceJsonData,
   DataQueryRequest,
   DataStreamObserver,
+  PanelModel,
 } from '@grafana/ui';
 import {
   ExploreUrlState,
@@ -65,7 +66,13 @@ export const lastUsedDatasourceKeyForOrgId = (orgId: number) => `${LAST_USED_DAT
  * @param datasourceSrv Datasource service to query other datasources in case the panel datasource is mixed
  * @param timeSrv Time service to get the current dashboard range from
  */
-export async function getExploreUrl(panelTargets: any[], panelDatasource: any, datasourceSrv: any, timeSrv: any) {
+export async function getExploreUrl(
+  panel: PanelModel,
+  panelTargets: any[],
+  panelDatasource: any,
+  datasourceSrv: any,
+  timeSrv: any
+) {
   let exploreDatasource = panelDatasource;
   let exploreTargets: DataQuery[] = panelTargets;
   let url: string;
@@ -93,6 +100,7 @@ export async function getExploreUrl(panelTargets: any[], panelDatasource: any, d
         ...state,
         datasource: exploreDatasource.name,
         queries: exploreTargets.map(t => ({ ...t, datasource: exploreDatasource.name })),
+        originPanel: panel.id,
       };
     }
 
@@ -204,6 +212,7 @@ export function parseUrlState(initial: string | undefined): ExploreUrlState {
     range: DEFAULT_RANGE,
     ui: DEFAULT_UI_STATE,
     mode: null,
+    originPanel: null,
   };
 
   if (!parsed) {
@@ -240,7 +249,8 @@ export function parseUrlState(initial: string | undefined): ExploreUrlState {
       }
     : DEFAULT_UI_STATE;
 
-  return { datasource, queries, range, ui, mode };
+  const originPanel = parsedSegments.filter(segment => isSegment(segment, 'originPanel'))[0];
+  return { datasource, queries, range, ui, mode, originPanel };
 }
 
 export function serializeStateToUrlParam(urlState: ExploreUrlState, compact?: boolean): string {
