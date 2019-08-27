@@ -81,6 +81,7 @@ import {
   queryFailureAction,
   setUrlReplacedAction,
   changeRangeAction,
+  clearOriginAction,
 } from './actionTypes';
 import { ActionOf, ActionCreator } from 'app/core/redux/actionCreatorFactory';
 import { getTimeZone } from 'app/features/profile/state/selectors';
@@ -219,6 +220,12 @@ export function clearQueries(exploreId: ExploreId): ThunkResult<void> {
     dispatch(scanStopAction({ exploreId }));
     dispatch(clearQueriesAction({ exploreId }));
     dispatch(stateSave());
+  };
+}
+
+export function clearOrigin(): ThunkResult<void> {
+  return dispatch => {
+    dispatch(clearOriginAction({ exploreId: ExploreId.left }));
   };
 }
 
